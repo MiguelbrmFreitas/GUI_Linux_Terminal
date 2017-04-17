@@ -1,0 +1,215 @@
+        -:    0:Source:teste.c
+        -:    0:Programs:5
+        -:    1:#include "interface.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <string.h>
+        -:    5:#include <ncurses.h>
+        -:    6:#include "CUnit/Basic.h"
+        -:    7:
+        -:    8:/* Pointer to the file used by the tests. */
+        -:    9:static FILE* temp_file = NULL;
+        -:   10:
+        -:   11:/* The suite initialization function.
+        -:   12: * Opens the temporary file used by the tests.
+        -:   13: * Returns zero on success, non-zero otherwise.
+        -:   14: */
+        1:   15:int init_suite1(void)
+        -:   16:{
+        1:   17:   if (NULL == (temp_file = fopen("temp.txt", "w+"))) {
+    #####:   18:      return -1;
+        -:   19:   }
+        -:   20:   else {
+        1:   21:      return 0;
+        -:   22:   }
+        -:   23:}
+        -:   24:
+        -:   25:/* The suite cleanup function.
+        -:   26: * Closes the temporary file used by the tests.
+        -:   27: * Returns zero on success, non-zero otherwise.
+        -:   28: */
+        1:   29:int clean_suite1(void)
+        -:   30:{
+        1:   31:   if (0 != fclose(temp_file)) {
+    #####:   32:      return -1;
+        -:   33:   }
+        -:   34:   else {
+        1:   35:      temp_file = NULL;
+        1:   36:      return 0;
+        -:   37:   }
+        -:   38:}
+        -:   39:
+    #####:   40:void test_inicializa_ncurses(void) {
+    #####:   41:	int t = inicializa_ncurses();
+    #####:   42:	CU_ASSERT(t == 1);
+    #####:   43:}
+        -:   44:
+        1:   45:void test_encerra_ncurses(void) {
+        1:   46:	int t = encerra_ncurses();
+        1:   47:	CU_ASSERT(t == 1);
+        1:   48:}
+        -:   49:
+        1:   50:void test_lista_cria(void){
+        1:   51:	CU_ASSERT(NULL == cria());
+        1:   52:}
+        -:   53:
+        1:   54:void test_insere_no_inicio(void) { 
+        1:   55:	Lista *p1 = NULL;
+        1:   56: 	p1 = insere_no_inicio(p1, "Comando","Nome","Comentário",1);
+        -:   57:        
+        1:   58:	CU_ASSERT(!strcmp(p1->comando,"Comando"));
+        1:   59:	CU_ASSERT(!strcmp(p1->nome,"Nome"));
+        1:   60:	CU_ASSERT(!strcmp(p1->comentario,"Comentário"));
+        1:   61:   CU_ASSERT(p1->num_usados==1);
+        -:   62:	/* Os dados da lista deve ser igual a Comando */
+        1:   63:}
+        -:   64:
+        1:   65:void test_conta_elementos(void){
+        1:   66:	Lista *p1 = NULL;
+        1:   67: 	p1 = insere_no_inicio(p1, "Comando 1","Nome 1","Comentário 1",1);
+        1:   68: 	p1 = insere_no_inicio(p1, "Comando 2","Nome 2","Comentário 2",2);
+        1:   69: 	p1 = insere_no_inicio(p1, "Comando 3","Nome 3","Comentário 3",3);
+        1:   70: 	int t = conta_elementos(p1);
+        1:   71: 	CU_ASSERT(t == 3);
+        1:   72:}
+        -:   73:
+        1:   74:void test_encontra_comando(void){
+        1:   75:	Lista *p1 = NULL;
+        1:   76: 	p1 = insere_no_inicio(p1, "Comando 1","Nome 1","Comentário 1",1);
+        1:   77: 	p1 = insere_no_inicio(p1, "Comando 2","Nome 2","Comentário 2",2);
+        1:   78: 	p1 = insere_no_inicio(p1, "Comando 3","Nome 3","Comentário 3",3);
+        1:   79: 	Lista *p2 = NULL;
+        1:   80: 	p2 = encontra_comando(p1,2);
+        1:   81: 	CU_ASSERT(!strcmp(p2->comando,"Comando 2"));
+        1:   82:}
+        -:   83:
+        1:   84:void test_cria_ou_atualiza_arquivo(void){
+        1:   85:	int t = cria_ou_atualiza_arquivo("Comando de teste", "cmd_teste", "cmt_teste",1);
+        1:   86:	CU_ASSERT(t == 1);
+        1:   87:}
+        -:   88:
+        1:   89:void test_reescreve_arquivo(void){
+        1:   90:	Lista *p1 = NULL;
+        1:   91: 	p1 = insere_no_inicio(p1, "Comando de teste 2","cmd_teste_2","cmt_teste_2",1);
+        1:   92:	CU_ASSERT(reescreve_arquivo(p1) == 1);
+        1:   93:}
+        -:   94:
+        1:   95:void test_print_menu(void){
+        -:   96:	WINDOW *menu;
+        1:   97:	menu = newwin(10,10,0,0);
+        1:   98:	char *esc[] = {
+        -:   99:		"Um",
+        -:  100:		"Dois",
+        -:  101:		"Três"
+        -:  102:	};
+        1:  103:	CU_ASSERT(print_menu(menu, 1, 3, esc) == 1);
+        1:  104:}
+        -:  105:
+        1:  106:void test_selecionar(void){
+        -:  107:	int t1, t2;
+        1:  108:	t1 = 1;
+        1:  109:	t2 = 2;
+        1:  110:	CU_ASSERT(selecionar(1,&t1,&t2,3) == 1);
+        1:  111:}
+        -:  112:
+        1:  113:void test_imprime_lista(void){
+        -:  114:	WINDOW *menu;
+        1:  115:	menu = newwin(100,100,0,0);
+        1:  116:	Lista *p1 = NULL;
+        1:  117: 	p1 = insere_no_inicio(p1, "Comando de teste 3","cmd_teste_3","cmt_teste_3",1);
+        1:  118: 	CU_ASSERT(imprime_lista(p1,menu) == 1);
+        1:  119:}
+        -:  120:
+        1:  121:void test_executa_comando(void){
+        1:  122:   int t = executa_comando("mkdir test_executa_comando");
+        1:  123:   CU_ASSERT(t == 1);
+        1:  124:}
+        -:  125:
+        1:  126:void test_recebe_input_simples(void){
+        -:  127:   WINDOW *menu;
+        1:  128:   menu = newwin(10,10,0,0);
+        1:  129:   int t = recebe_input_simples(menu);
+        1:  130:   CU_ASSERT(t == -1);
+        -:  131:
+        1:  132:}
+        -:  133:
+        1:  134:void test_ordena(void){
+        1:  135:   Lista *p1 = NULL;
+        1:  136:   p1 = insere_no_inicio(p1, "Comando de teste 2","cmd_teste_2","cmt_teste_2",1);
+        1:  137:   p1 = insere_no_inicio(p1, "Comando de teste 3","cmd_teste_3","cmt_teste_3",2);
+        1:  138:   int t = ordena(p1);
+        1:  139:   CU_ASSERT(t == 1);
+        1:  140:}
+        -:  141:
+        1:  142:void test_procura_string(void){
+        1:  143:   Lista *p1 = NULL;
+        1:  144:   p1 = insere_no_inicio(p1, "Comando de teste 2","cmd_teste_2","cmt_teste_2",1);
+        1:  145:   Lista *p2 = procura_string(p1, "Comando de teste 2");
+        1:  146:   CU_ASSERT(!strcmp(p2->comando,"Comando de teste 2"));
+        1:  147:}
+        -:  148:
+        1:  149:void test_abre_arquivo(void){
+        1:  150:   Lista *p1 = NULL;
+        1:  151:   p1 = abre_arquivo(p1);
+        1:  152:   CU_ASSERT(1 == 1);
+        1:  153:}
+        -:  154:
+        1:  155:void test_remover_comando(void){
+        1:  156:   Lista *p1 = insere_no_inicio(p1, "Comando de teste 2","cmd_teste_2","cmt_teste_2",1);
+        1:  157:   Lista *p2 = NULL;
+        1:  158:   int t = remover_comando(p1,p2);
+        1:  159:   CU_ASSERT(t == 1);
+        1:  160:}
+        -:  161:
+        -:  162://int janela_criar_comando(WINDOW *); /* Janela de criar novo comando */
+        -:  163:
+        -:  164://int janela_abrir_comandos(WINDOW *menu_win); /* Janela de abrir comando existente */
+        -:  165:
+        -:  166:
+        1:  167:int main(){
+        -:  168:	
+        1:  169:	CU_pSuite pSuite = NULL;
+        -:  170:
+        -:  171:   /* initialize the CUnit test registry */
+        1:  172:   if (CUE_SUCCESS != CU_initialize_registry())
+    #####:  173:      return CU_get_error();
+        -:  174:
+        -:  175:   /* add a suite to the registry */
+        1:  176:   pSuite = CU_add_suite("Suite_1", init_suite1, clean_suite1);
+        1:  177:   if (NULL == pSuite) {
+    #####:  178:      CU_cleanup_registry();
+    #####:  179:      return CU_get_error();
+        -:  180:   }
+        -:  181:
+        -:  182:   /* add the tests to the suite */
+        -:  183:   /* Testes das funções */
+        1:  184:   if ((NULL == CU_add_test(pSuite, "test of insere_no_inicio", test_insere_no_inicio))
+        -:  185:   	//|| (NULL == CU_add_test(pSuite, "test of inicializa_ncurses", test_inicializa_ncurses))
+        1:  186:   	|| (NULL == CU_add_test(pSuite, "test of encerra_ncurses", test_encerra_ncurses))
+        1:  187:   	|| (NULL == CU_add_test(pSuite, "test of lista_cria", test_lista_cria))
+        1:  188:   	|| (NULL == CU_add_test(pSuite, "test of conta_elementos", test_conta_elementos))
+        1:  189:   	|| (NULL == CU_add_test(pSuite, "test of encontra_comando", test_encontra_comando))
+        1:  190:   	|| (NULL == CU_add_test(pSuite, "test of cria_ou_atualiza_arquivo", test_cria_ou_atualiza_arquivo))
+        1:  191:   	|| (NULL == CU_add_test(pSuite, "test of reescreve_arquivo", test_reescreve_arquivo))
+        1:  192:   	|| (NULL == CU_add_test(pSuite, "test of print_menu",test_print_menu))
+        1:  193:   	|| (NULL == CU_add_test(pSuite, "test of selecionar",test_selecionar))
+        1:  194:   	|| (NULL == CU_add_test(pSuite, "test of imprime_lista",test_imprime_lista))
+        1:  195:      || (NULL == CU_add_test(pSuite, "test of recebe_input_simples",test_recebe_input_simples))
+        1:  196:      || (NULL == CU_add_test(pSuite, "test of ordena",test_ordena))
+        1:  197:      || (NULL == CU_add_test(pSuite, "test of procura_string",test_procura_string))
+        1:  198:      || (NULL == CU_add_test(pSuite, "test of abre_arquivo",test_abre_arquivo))
+        1:  199:      || (NULL == CU_add_test(pSuite, "test of remover_comando",test_remover_comando))
+        1:  200:      || (NULL == CU_add_test(pSuite, "test of executa_comando",test_executa_comando))
+        -:  201:
+        -:  202:   	)
+        -:  203:   {
+    #####:  204:      CU_cleanup_registry();
+    #####:  205:      return CU_get_error();
+        -:  206:   }
+        -:  207:
+        -:  208:   /* Run all tests using the CUnit Basic interface */
+        1:  209:   CU_basic_set_mode(CU_BRM_VERBOSE);
+        1:  210:   CU_basic_run_tests();
+        1:  211:   CU_cleanup_registry();
+        1:  212:   return CU_get_error();
+        -:  213:}

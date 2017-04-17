@@ -1,0 +1,173 @@
+        -:    0:Source:arquivo.c
+        -:    0:Programs:5
+        -:    1:#include "arquivo.h"
+        -:    2:
+    #####:    3:Lista* cria()
+        -:    4:{
+    #####:    5:    return NULL;
+        -:    6:}
+        -:    7:
+    #####:    8:Lista* insere_no_inicio(Lista *pinicio, char *comando, char *nome, char *comentario, int num_usados)
+        -:    9:{
+        -:   10:    Lista* novo;
+    #####:   11:    novo = (Lista*) malloc(sizeof(Lista)); /* aloca a lista */
+        -:   12:    /*  Copia as strings de referência para os campos do nó da lista */
+    #####:   13:    novo->num_usados = num_usados;
+    #####:   14:    strcpy(novo->comando, comando);
+    #####:   15:    strcpy(novo->nome, nome);
+    #####:   16:    strcpy(novo->comentario, comentario);
+    #####:   17:    novo->prox = pinicio; /* O próximo é o novo início */
+        -:   18:
+    #####:   19:    return novo;
+        -:   20:}
+        -:   21:
+    #####:   22:int conta_elementos(Lista *inicio)
+        -:   23:{
+        -:   24:    Lista *aux;
+    #####:   25:    int n = 0;
+        -:   26:
+    #####:   27:    for(aux = inicio; aux != NULL; aux = aux->prox) /* Percorre a lista e conta o número de nós (ou seja, de comandos) */
+    #####:   28:        n++;
+        -:   29:
+    #####:   30:    return n;
+        -:   31:}
+        -:   32:
+    #####:   33:Lista* encontra_comando(Lista *inicio, int num)
+        -:   34:{
+    #####:   35:    Lista *aux = NULL;
+    #####:   36:    int i = 1;
+        -:   37:
+    #####:   38:    aux = inicio;
+    #####:   39:    while(i != num) /* Enquanto i não for o número do comando escolhido, passa para o próximo nó */
+        -:   40:    {
+    #####:   41:        aux = aux->prox;
+    #####:   42:        i++;
+        -:   43:    }
+        -:   44:
+    #####:   45:    return aux; /* Retorna o elemento da lista com o comando escolhido */
+        -:   46:}
+        -:   47:
+    #####:   48:Lista* procura_string(Lista *inicio, char *string)
+        -:   49:{
+        -:   50:    Lista *aux;
+        -:   51:
+    #####:   52:    aux = inicio;
+    #####:   53:    while(aux != NULL)
+        -:   54:    {
+    #####:   55:        if(!strcmp(aux->comando,string) || strstr(aux->comando,string) ||
+    #####:   56:                !strcmp(aux->comentario, string) || strstr(aux->comentario,string) ||
+    #####:   57:                !strcmp(aux->nome, string) || strstr (aux->nome,string))
+        -:   58:            break;
+    #####:   59:        aux = aux->prox;
+        -:   60:    }
+        -:   61:
+    #####:   62:    return aux;
+        -:   63:}
+        -:   64:
+    #####:   65:int ordena(Lista *pinicio)
+        -:   66:{
+        -:   67:    Lista *p1, *p2, *p3;
+        -:   68:    int aux;
+    #####:   69:    char nome[120] = "\0", comando[120] = "\0", comentario[300] = "\0";
+    #####:   70:    if (pinicio != NULL)
+        -:   71:    {
+    #####:   72:        p1 = pinicio; /* Ponteiro inicial */
+    #####:   73:        while (p1->prox != NULL) /* ENquanto o próximo do inicial for diferente de nulo */
+        -:   74:        {
+    #####:   75:            p3 = p1; /* Armazena o inicial */
+    #####:   76:            p2 = p1->prox; /* Armazena o próximo do inicial */
+    #####:   77:            while (p2 != NULL) /* ENquanto p2 for diferente de nulo */
+        -:   78:            {
+    #####:   79:                if (p3->num_usados < p2->num_usados) /* Se o p3 apontar pra um comando menos usado do que p2 */
+    #####:   80:                    p3 = p2;                         /* É efetuada a troca de ponteiros */
+    #####:   81:                p2 = p2->prox;
+        -:   82:            }
+    #####:   83:            if (p1 != p3)
+        -:   84:            { /* Efetua as trocas de acordo com o maior */
+    #####:   85:                aux = p3->num_usados;
+    #####:   86:                strcpy(nome, p3->nome);
+    #####:   87:                strcpy(comando, p3->comando);
+    #####:   88:                strcpy(comentario, p3->comentario);
+        -:   89:
+    #####:   90:                p3->num_usados = p1->num_usados;
+    #####:   91:                strcpy(p3->nome, p1->nome);
+    #####:   92:                strcpy(p3->comando, p1->comando);
+    #####:   93:                strcpy(p3->comentario, p1->comentario);
+        -:   94:
+    #####:   95:                p1->num_usados = aux;
+    #####:   96:                strcpy(p1->nome, nome);
+    #####:   97:                strcpy(p1->comando, comando);
+    #####:   98:                strcpy(p1->comentario, comentario);
+        -:   99:            }
+    #####:  100:            p1 = p1->prox;
+        -:  101:        }
+        -:  102:    }
+    #####:  103:    return 1;
+        -:  104:}
+        -:  105:
+    #####:  106:int cria_ou_atualiza_arquivo(char* nome, char* comando, char* comentario, int num_usados)
+        -:  107:{
+        -:  108:    FILE* arquivo;
+    #####:  109:    arquivo = fopen("lista_comandos.txt", "a+");				/*Cria o arquivo que armazena*/
+        -:  110:
+    #####:  111:    fprintf(arquivo, "%s:%s | %s - %d\n",nome,comando,comentario, num_usados); /* Escreve o novo comando no arquivo */
+        -:  112:
+    #####:  113:    fclose(arquivo);							/*E fecha*/
+    #####:  114:    return 1;
+        -:  115:}
+        -:  116:
+    #####:  117:Lista* abre_arquivo(Lista *lis)
+        -:  118:{
+    #####:  119:    lis = cria();
+        -:  120:    int num_usados;
+    #####:  121:    char comando[80] = "\0";
+    #####:  122:    char nome[120] = "\0";
+    #####:  123:    char comentario[300] = "\0";
+    #####:  124:    FILE *arquivo = fopen("lista_comandos.txt","r");
+    #####:  125:    if(arquivo == NULL) /* Indica erro na abertura do arquivo */
+        -:  126:    {
+    #####:  127:        exit(1);
+        -:  128:    }
+        -:  129:
+        -:  130:    do
+        -:  131:    {
+    #####:  132:        fscanf(arquivo, "%[^:]:%[^|]|%[^-]-%d\n", nome, comando, comentario, &num_usados); /* Lê as strings no padrão do arquivo */
+    #####:  133:        if (comando[(strlen(comando))-1] != ' ' && comando[(strlen(comando))-2]);
+    #####:  134:        lis = insere_no_inicio(lis, comando, nome, comentario, num_usados); /* Insere as strings em uma lista */
+        -:  135:    }
+    #####:  136:    while(!feof(arquivo));  /* Faz isso enquanto ainda tiverem registros no arquivo */
+    #####:  137:    fclose(arquivo);
+        -:  138:
+    #####:  139:    return lis;
+        -:  140:}
+        -:  141:
+    #####:  142:int reescreve_arquivo(Lista *inicio)
+        -:  143:{
+    #####:  144:    Lista *aux = NULL;
+        -:  145:    FILE *arquivo;
+        -:  146:
+    #####:  147:    arquivo = fopen("lista_comandos.txt", "w"); /* Abre para escrever por cima. Ou seja, reescrever */
+        -:  148:
+    #####:  149:    for(aux = inicio; aux != NULL; aux = aux->prox) /* Escreve a lista no arquivo */
+    #####:  150:        fprintf(arquivo, "%s:%s | %s - %d\n",aux->nome,aux->comando,aux->comentario,aux->num_usados); /* Nos padrões do arquivo */
+        -:  151:
+    #####:  152:    fclose(arquivo);
+    #####:  153:    return 1;
+        -:  154:}
+        -:  155:
+    #####:  156:int remover_comando(Lista *pcomando, Lista *p1)
+        -:  157:{
+        -:  158:    Lista *aux; /* Lista auxiliar */
+        -:  159:    FILE *arq;
+        -:  160:
+    #####:  161:    arq = fopen("lista_comandos.txt", "w"); /* Abre para reescrever */
+        -:  162:
+    #####:  163:    for(aux = p1; aux != NULL; aux = aux->prox)
+        -:  164:    {
+    #####:  165:        if(aux != pcomando) /* Se a lista for diferente da posição aonde tem o registro a ser removido, não coloca no arquivo novo */
+    #####:  166:            fprintf(arq, "%s:%s | %s - %d\n",aux->nome,aux->comando,aux->comentario,aux->num_usados); /* Nos padrões do arquivo */
+        -:  167:    }
+        -:  168:
+    #####:  169:    fclose(arq);
+    #####:  170:    return 1;
+        -:  171:}

@@ -1,0 +1,292 @@
+        -:    0:Source:interface.c
+        -:    0:Programs:5
+        -:    1:#include "interface.h"
+        -:    2:
+        4:    3:int selecionar(int c, int *selecao, int *escolha, int n_escolhas){
+        4:    4:    switch(c) /* Dependendo do input, faz determinada coisa */
+        -:    5:    {
+        -:    6:        case KEY_UP: /* Seta para cima */
+    #####:    7:            if((*selecao) == 1) /* Se for 1 e UP for apertado, vai para a última opção */
+    #####:    8:                (*selecao) = n_escolhas;
+        -:    9:            else /* Caso contrário, diminuí uma linha para a variável de seleção */
+    #####:   10:                (*selecao)--;
+    #####:   11:            break;
+        -:   12:        case KEY_DOWN: /* Seta para baixo */
+        3:   13:            if((*selecao) == n_escolhas) /* Se for a última opção, volta para a primeira */
+    #####:   14:                (*selecao) = 1;
+        -:   15:            else /* Senão, aumenta uma linha para a variável de seleção */
+        3:   16:                (*selecao)++;
+        3:   17:            break;
+        -:   18:        case 10: /* Enter */
+        1:   19:            (*escolha) = (*selecao); /* Escolha recebe a posição da variável de seleção */
+        1:   20:            break;
+        -:   21:        default: /* Qualquer outra coisa. Mostra erro. */
+    #####:   22:            mvprintw(35, 0, "Operação inválida.");
+    #####:   23:            refresh();
+    #####:   24:            break;
+        -:   25:    }
+        4:   26:    return 1;
+        -:   27:}
+        -:   28:
+        -:   29:
+        5:   30:int print_menu(WINDOW *win, int selecao, int n_escolhas, char *escolhas[8]) /* 8 é o número máximo de comandos que podem ser armazenados */
+        -:   31:{
+        5:   32:	int x = 1, y = 2, i;
+        -:   33:
+        5:   34:	box(win, 0, 0); /* Cria a janela */
+        5:   35:	wbkgd(win, COLOR_PAIR(3)); /* Colore a janela */
+        -:   36:
+       25:   37:	for(i = 0; i < n_escolhas; ++i)
+        -:   38:	{
+       20:   39:	    if(selecao == (i + 1)) /* Seleciona a escolha */
+        -:   40:		{
+        5:   41:		    wattron(win, A_REVERSE); /* Dá um highlight na próxima opção */
+        5:   42:			mvwprintw(win, y, x, "%s", escolhas[i]); /* Printa a opção com highlight */
+        5:   43:			wattroff(win, A_REVERSE); /* Cancela os highlights para as outras opções que vem */
+        -:   44:		}
+        -:   45:		else
+       15:   46:			mvwprintw(win, y, x, "%s", escolhas[i]); /* Printa a opção sem highlight */
+        -:   47:
+       20:   48:		y++; /* Incrementa a linha aonde será printada a próxima opção */
+        -:   49:	}
+        5:   50:	wrefresh(win); /* Atualiza a janela */
+        5:   51:    return 1;
+        -:   52:}
+        -:   53:
+    #####:   54:int imprime_lista(Lista *pinicio, WINDOW *win)
+        -:   55:{
+        -:   56:    Lista *aux;
+    #####:   57:    int i = 1;
+    #####:   58:    for(aux = pinicio; aux != NULL; aux = aux->prox) /* Imprime a lista de comandos na tela */
+        -:   59:    {
+    #####:   60:        mvwprintw(win, i, 1, "%d) Nome do comando: %s | Comando: %s | Comentário: %s", i, aux->nome, aux->comando, aux->comentario);
+    #####:   61:        i++;
+        -:   62:    }
+    #####:   63:    return 1;
+        -:   64:}
+        -:   65:
+    #####:   66:void janela_procurar_comando(WINDOW *win)
+        -:   67:{
+    #####:   68:    char input, *string = "\0";
+    #####:   69:    Lista *p1 = NULL;
+        -:   70:
+    #####:   71:    box(win, 0, 0); /* Cria a janela */
+    #####:   72:	wbkgd(win, COLOR_PAIR(3)); /* Colore a janela */
+        -:   73:
+    #####:   74:    p1 = abre_arquivo(p1);
+        -:   75:
+    #####:   76:    mvwprintw(win, 1, 1, "Diga uma palavra chave para procurar dentre os comandos: ");
+    #####:   77:    string = recebe_string(win, 120);
+        -:   78:
+    #####:   79:    p1 = procura_string(p1, string);
+        -:   80:
+    #####:   81:    if(!p1)
+    #####:   82:        mvwprintw(win, 3, 1, "Nenhum resultado encontrado!");
+        -:   83:    else
+        -:   84:    {
+    #####:   85:        mvwprintw(win, 3, 1, "O comando \"%s\", de nome %s foi encontrado.", p1->comando,p1->nome);
+    #####:   86:        mvwprintw(win, 4, 1, "Deseja executá-lo? (S/N) ");
+    #####:   87:        wrefresh(win);
+        -:   88:        do{
+    #####:   89:            input = recebe_input_simples(win);
+    #####:   90:        }while(input != 's' && input != 'S' && input != 'n' && input != 'N');
+        -:   91:
+    #####:   92:        if(input == 's' || input == 'S')
+        -:   93:        {
+    #####:   94:            executa_comando(p1->comando);
+    #####:   95:            p1->num_usados += 1; /* Incrementa o número de vezes que o comando foi usado */
+    #####:   96:            reescreve_arquivo(p1); /* Reescreve o arquivo com as novas informações */
+        -:   97:        }
+        -:   98:    }
+    #####:   99:    mvwprintw(win, 6, 1, "Pressione qualquer tecla para voltar...");
+    #####:  100:    wgetch(win);
+    #####:  101:}
+        -:  102:
+    #####:  103:void janela_criar_comando(WINDOW *win)
+        -:  104:{
+    #####:  105:    char *comando, *nome_comando, *comentario = "Sem comentário", decisao;
+    #####:  106:    Lista *p1 = NULL;
+        -:  107:
+    #####:  108:    box(win, 0, 0);
+        -:  109:
+    #####:  110:    wbkgd(win, COLOR_PAIR(4)); /* COlore a janela */
+        -:  111:
+    #####:  112:    mvwprintw(win, 1,1, "Diga o nome do novo comando: ");
+        -:  113:
+    #####:  114:    nome_comando = recebe_string(win, 80);
+        -:  115:
+    #####:  116:    mvwprintw(win, 2, 1, "Diga o novo comando: ");
+        -:  117:
+    #####:  118:    comando = recebe_string(win, 120);
+        -:  119:
+    #####:  120:    mvwprintw(win, 3, 1, "Deseja adicionar um comentário sobre o comando? (S/N)");
+        -:  121:    do{
+    #####:  122:        decisao = recebe_input_simples(win);
+    #####:  123:        if(decisao == 's' || decisao == 'S'){
+    #####:  124:            mvwprintw(win, 4, 1, "Diga o comentário: ");
+    #####:  125:            comentario = recebe_string(win, 300); /* Adiciona um comentário */
+        -:  126:        }
+    #####:  127:    }while(decisao != 's' && decisao != 'S' && decisao != 'n' && decisao != 'N'); /* O loop acontece enquanto a decisão não for sim ou não */
+        -:  128:
+    #####:  129:    mvwprintw(win, 5,1, "O novo comando é: \"%s\", de nome \" %s \"", comando, nome_comando);
+    #####:  130:    mvwprintw(win, 6,1, "O comentário sobre ele é: %s", comentario);
+    #####:  131:    mvwprintw(win, 7,1, "Deseja salvar o comando? (S/N) ");
+        -:  132:    do{
+    #####:  133:        decisao = recebe_input_simples(win);
+    #####:  134:        if(decisao == 's' || decisao == 'S')
+    #####:  135:            cria_ou_atualiza_arquivo(nome_comando, comando, comentario, 0); /* Salva comando em arquivo. */
+    #####:  136:    }while(decisao != 's' && decisao != 'S' && decisao != 'n' && decisao != 'N'); /* O loop acontece enquanto a decisão não for sim ou não */
+        -:  137:
+        -:  138:
+    #####:  139:    p1 = abre_arquivo(p1); /* Recebe as informações do arquivo */
+        -:  140:
+    #####:  141:    mvwprintw(win, 8,1, "Deseja executar o comando? (S/N) ");
+        -:  142:    do{
+    #####:  143:        decisao = recebe_input_simples(win);
+    #####:  144:        if(decisao == 's' || decisao == 'S')
+        -:  145:        {
+    #####:  146:            executa_comando(comando); /* Executa o comando */
+    #####:  147:            p1->num_usados += 1; /* Incrementa o número de vezes que o comando foi usado */
+    #####:  148:            reescreve_arquivo(p1); /* Reescreve o arquivo com as novas informações */
+        -:  149:        }
+    #####:  150:    }while(decisao != 's' && decisao != 'S' && decisao != 'n' && decisao != 'N'); /* O loop acontece enquanto a decisão não for sim ou não */
+        -:  151:
+    #####:  152:    wclear(win); /* Limpa a janela */
+    #####:  153:    box(win, 0, 0); /* Faz o seu contorno novamente */
+        -:  154:
+    #####:  155:    if (decisao == 's' || decisao == 'S')
+    #####:  156:	mvwprintw(win, 2, 1, "Foi executado o comando \" %s \" ...", comando);
+    #####:  157:    mvwprintw(win, 5, 1, "Pressione qualquer tecla para voltar ao menu principal...");
+        -:  158:
+    #####:  159:    wrefresh(win); /* Atualiza a janela */
+    #####:  160:    wgetch(win); /* Aguarda uma tecla para sair */
+    #####:  161:}
+        -:  162:
+    #####:  163:void janela_abrir_comandos(WINDOW *menu_win)
+        -:  164:{
+    #####:  165:    Lista *p1 = NULL, *pcomando = NULL;
+    #####:  166:    int c, n_escolhas, escolha = 0, selecao = 1, n_comandos = 0, num_comando, tentativas = 0;
+    #####:  167:    char *opcao_comando = "\0", *novoparametro, *novonome, *novocomentario, decisao;
+    #####:  168:    char *escolhas[] = { /* Possíveis escolhas */
+        -:  169:			"Executar",
+        -:  170:			"Adicionar parâmetro",
+        -:  171:			"Salvar",
+        -:  172:			"Salvar como",
+        -:  173:			"Adicionar comentário",
+        -:  174:			"Remover comando",
+        -:  175:			"Sair"
+        -:  176:		  };
+        -:  177:
+    #####:  178:    n_escolhas = sizeof(escolhas) / sizeof(char *);
+        -:  179:
+    #####:  180:    p1 = abre_arquivo(p1);
+        -:  181:
+    #####:  182:    n_comandos = conta_elementos(p1);
+        -:  183:
+    #####:  184:    box(menu_win, 0, 0); /* Cria a janela */
+        -:  185:
+    #####:  186:    wbkgd(menu_win, COLOR_PAIR(2)); /* Colore a janela */
+        -:  187:
+    #####:  188:    ordena(p1); /* Ordena o ponteiro para arquivo */
+    #####:  189:    imprime_lista(p1, menu_win);
+        -:  190:
+    #####:  191:    mvwprintw(menu_win, 26, 1, "Escolha o número do comando: ");
+        -:  192:    do
+        -:  193:    {
+    #####:  194:        if (tentativas)/* Se for a segunda tentativa e estiver errado, exibe mensagem de erro */
+        -:  195:        {
+    #####:  196:            wmove(menu_win,26, 0);
+    #####:  197:            wclrtoeol(menu_win); /* Limpa a linha atual */
+    #####:  198:            mvwprintw(menu_win, 26, 1, "Valor inválido! Escolha novamente: ");
+    #####:  199:            wrefresh(menu_win);
+        -:  200:        }
+    #####:  201:        opcao_comando = recebe_string(menu_win, 3);
+    #####:  202:        num_comando = atoi(opcao_comando);
+    #####:  203:        tentativas++;
+    #####:  204:    }while(num_comando <= 0 || num_comando > n_comandos); /* Enquanto for um número inválido, pede novamente */
+        -:  205:
+    #####:  206:    pcomando = encontra_comando(p1, num_comando);
+        -:  207:
+    #####:  208:    wclear(menu_win);
+        -:  209:
+    #####:  210:    mvwprintw(menu_win, 1, 1, "Comando selecionado -> Nome: %s | Comando: %s | Comentário: %s", pcomando->nome, pcomando->comando, pcomando->comentario);
+    #####:  211:    wrefresh(menu_win);
+        -:  212:
+    #####:  213:    print_menu(menu_win, selecao, n_escolhas, escolhas);
+        -:  214:    do
+        -:  215:    {
+    #####:  216:        mvprintw(35, 0, "                                                                 "); /* Limpa o aviso de erro da tela */
+    #####:  217:        c = recebe_input_simples(menu_win); /* Recebe um input do teclado */
+    #####:  218:        refresh();
+    #####:  219:        selecionar(c, &selecao, &escolha, n_escolhas); /* Deixa o usuário selecionar dentre as opções */
+    #####:  220:        print_menu(menu_win, selecao, n_escolhas, escolhas); /* Mostra o menu depois do input */
+    #####:  221:    }while(!escolha); /* Acontece enquanto nenhuma escolha tiver sido escolhida */
+        -:  222:
+    #####:  223:    wclear(menu_win); /* Limpa a janela */
+    #####:  224:    box(menu_win, 0, 0);
+        -:  225:
+    #####:  226:    if (escolha == 1) /* Executar */
+        -:  227:    {
+    #####:  228:        executa_comando(pcomando->comando); /* Executa o comando escolhido pelo usuário */
+    #####:  229:        pcomando->num_usados += 1; /* Incrementa 1 no número de vezes que foi usado */
+    #####:  230:        reescreve_arquivo(p1);
+    #####:  231:        mvwprintw(menu_win, 2, 2, "Foi executado o comando \" %s \" ...", pcomando->comando);
+    #####:  232:        wrefresh(menu_win);
+        -:  233:    }
+    #####:  234:    else if (escolha == 2) /* Adicionar parâmetro */
+        -:  235:    {
+    #####:  236:        mvwprintw(menu_win, 2, 2, "O comando é: %s", pcomando->comando);
+    #####:  237:        mvwprintw(menu_win, 3, 2, "Escreva um parâmetro para ser adicionado: ");
+    #####:  238:        novoparametro = recebe_string(menu_win, 20); /* Lê o parâmetro */
+    #####:  239:        strcat(pcomando->comando, " "); /* Adiciona um espaço na frente do comando para facilitar a adição de parâmetros posteriormente */
+    #####:  240:        strcat(pcomando->comando, novoparametro); /* Concatena o parâmetro no final do comando para a região de memória do comando selecionado */
+    #####:  241:        reescreve_arquivo(p1); /* Reescreve o arquivo com um novo parâmetro */
+    #####:  242:        mvwprintw(menu_win, 4, 2, "O comando com o novo parâmetro agora é: %s", pcomando->comando);
+    #####:  243:        mvwprintw(menu_win, 5, 2, "Deseja executar com o novo parâmetro? (S/N)");
+        -:  244:        do
+        -:  245:        {
+    #####:  246:            decisao = recebe_input_simples(menu_win);
+    #####:  247:            if(decisao == 's' || decisao == 'S')
+        -:  248:            {
+    #####:  249:                executa_comando(pcomando->comando);
+    #####:  250:                mvwprintw(menu_win, 6, 2, "Foi executado o comando \" %s \" ...", pcomando->comando);
+        -:  251:            }
+    #####:  252:        }while(decisao != 's' && decisao != 'S' && decisao != 'n' && decisao != 'N');
+        -:  253:
+    #####:  254:        wrefresh(menu_win);
+        -:  255:    }
+    #####:  256:    else if (escolha == 3) /* Salvar */
+        -:  257:    {
+    #####:  258:        mvwprintw(menu_win, 2, 2, "O comando foi salvo com sucesso.");
+        -:  259:    }
+    #####:  260:    else if (escolha == 4) /* Salvar como */
+        -:  261:    {
+    #####:  262:        mvwprintw(menu_win, 2, 2, "O nome atual do comando é: %s", pcomando->nome);
+    #####:  263:        mvwprintw(menu_win, 3, 2, "Escreva o novo nome: ");
+    #####:  264:        novonome = recebe_string(menu_win, 120);
+    #####:  265:        strcpy(pcomando->nome, novonome); /* Atribuí o novo nome para a região de memória do nome do comando selecionado */
+    #####:  266:        reescreve_arquivo(p1); /* Reescreve o arquivo com o novo nome */
+    #####:  267:        mvwprintw(menu_win, 4, 2, "O comando com o novo nome agora é: %s", pcomando->nome);
+        -:  268:    }
+    #####:  269:    else if (escolha == 5) /* Adicionar comentário */
+        -:  270:    {
+    #####:  271:        mvwprintw(menu_win, 2, 2, "O comentário atual do comando é: %s", pcomando->comentario);
+    #####:  272:        mvwprintw(menu_win, 3, 2, "Escreva o novo comentário: ");
+    #####:  273:        novocomentario = recebe_string(menu_win, 300); /* Lê o novo comentário do teclado */
+    #####:  274:        strcpy(pcomando->comentario, novocomentario); /* Atribuí o novo nome para a região de memória do nome do comando selecionado */
+    #####:  275:        reescreve_arquivo(p1); /* Reescreve o arquivo com um novo comentário */
+    #####:  276:        mvwprintw(menu_win, 4, 2, "O comentário novo do comando agora é: %s", pcomando->comentario);
+        -:  277:    }
+        -:  278:
+    #####:  279:    else if(escolha == 6) /* Remover comando */
+        -:  280:    {
+    #####:  281:        mvwprintw(menu_win, 2, 2, "O comando \" %s \" foi removido.", pcomando->comando);
+    #####:  282:        remover_comando(pcomando, p1); /* Remove o comando */
+        -:  283:    }
+        -:  284:
+        -:  285:    else /* Sair */
+    #####:  286:        return;
+        -:  287:
+    #####:  288:    mvwprintw(menu_win, 10, 2, "Pressione qualquer tecla para voltar ao menu principal..."); /* Espera um input para voltar ao menu principal */
+    #####:  289:    wgetch(menu_win);
+        -:  290:}

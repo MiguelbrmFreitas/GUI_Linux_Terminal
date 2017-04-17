@@ -1,0 +1,20 @@
+        -:    0:Source:comando.c
+        -:    0:Programs:5
+        -:    1:#include "comando.h"
+        -:    2:
+    #####:    3:int executa_comando(char *comando)
+        -:    4:{
+    #####:    5:    def_prog_mode();		/* Salva o estado da ncurses */
+    #####:    6:	endwin();			/* Sai temporariamente  */
+        -:    7:
+    #####:    8:    system(comando); /* Pega string e executa comando no terminal através da função system() */
+        -:    9:
+    #####:   10:    printf("\n\n\nAperte qualquer tecla para voltar ao programa...");
+    #####:   11:    while(getchar()!='\n'); /* Espera um enter sem acumular nada no buffer */
+        -:   12:
+    #####:   13:    reset_prog_mode(); /* Volta a ncurses */
+        -:   14:
+    #####:   15:    refresh();
+        -:   16:
+    #####:   17:    return 1;
+        -:   18:}

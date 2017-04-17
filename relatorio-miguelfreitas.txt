@@ -1,0 +1,43 @@
+Relatório de Projeto - Miguel Barreto Rezende Marques de Freitas
+Matrícula:12/0130424
+
+Data:07/12/2013
+Horas Trabalhadas:2
+Tipo Tarefa:
+-Estudar
+Descrição da tarefa realizada: Estudar algoritmos de ordenação de lista encadeada.
+
+Data:09/12/2013
+Horas Trabalhadas: 2
+Tipo Tarefa
+-Estudar
+Descrição da tarefa realizada: Estudar sobre pipeline.
+
+Data:13/12/2013
+Horas trabalhadas: 2
+Tipo Tarefa:
+- Adicionar e especificar funções novas aos módulos
+Descrição da tarefa realizada: Bolar, especificar e começar a implementar as novas funções necessárias para os novos requisitos do projeto.
+
+Data: 15/12/2013
+Horas Trabalhadas: 3
+Tipo Tarefa:
+-Codificar Módulo
+-Revisar código do módulo
+Descrição da tarefa realizada: Término da implementação da funcionalidade de buscar strings nos comandos, nome de comandos e comentários e poder executar o comando se encontrado.
+ 
+Data: 16/12/2013
+Horas Trabalhadas: 5
+Tipo Tarefa
+-Codificar Módulo
+-Revisar código do módulo
+-Adaptar módulos
+Descrição da tarefa realizada: Implementação de funções da funcionalidade de ordenar os comandos por ordem de mais executados e adaptação dos demais módulos a esta nova funcionalidade.
+
+Data: 17/12/2013
+Horas Trabalhadas: 4
+Tipo Tarefa:
+- Debug
+- Revisão geral do projeto
+- Documentação do projeto
+Descrição da tarefa realizada: Procura de possíveis falhas e defeitos no projeto, corrigindo-os e documentação do que foi feito.

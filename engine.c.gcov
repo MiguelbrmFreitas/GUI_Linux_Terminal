@@ -1,0 +1,40 @@
+        -:    0:Source:engine.c
+        -:    0:Programs:5
+        -:    1:#include "engine.h"
+        -:    2:
+        1:    3:int inicializa_ncurses()
+        -:    4:{
+        1:    5:    initscr(); /* Inicializa a ncurses */
+        1:    6:	curs_set(0); /* Some com o cursor */
+        1:    7:	raw();	/* Desativar o buffer por linha. */
+        1:    8:	start_color(); /* Habilita o uso de cores */
+        1:    9:    return 1;
+        -:   10:}
+        -:   11:
+        1:   12:int encerra_ncurses()
+        -:   13:{
+        1:   14:    getch(); /* Espera um input para finalizar */
+        1:   15:    endwin(); /* Define o fim da execução da ncurses */
+        1:   16:    return 1;
+        -:   17:}
+        -:   18:
+        4:   19:int recebe_input_simples(WINDOW *menu_win)
+        -:   20:{
+        -:   21:    int c;
+        -:   22:
+        4:   23:    noecho(); /* Impede que o caractere seja mostrado na tela */
+        4:   24:    c = wgetch(menu_win); /* Recebe o input para determinada janela */
+        4:   25:    echo(); /* Habilita novamente que se mostre caracteres na tela, para não interferir em funções posteriores */
+        -:   26:
+        4:   27:    return c; /* Retorna o ASCII (ou macro) correspondente do caractere */
+        -:   28:}
+        -:   29:
+    #####:   30:char* recebe_string(WINDOW *win, int n) /* É fácil de modificar essa função para ler dentro de uma janelinha, posteriormente */
+        -:   31:{
+    #####:   32:    char *string = NULL; /* Declara e inicializa um ponteiro para char */
+    #####:   33:    string = (char*) malloc(n*sizeof(char)); /* Aloca como uma string de n caracteres (máximo para uma linha de comando) */
+        -:   34:
+    #####:   35:    wgetstr(win, string); /* Lê essa string do teclado na janela em questão */
+        -:   36:
+    #####:   37:    return string; /* Retorna a string lida */
+        -:   38:}

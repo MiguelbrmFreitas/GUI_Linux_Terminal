@@ -1,0 +1,54 @@
+Programa: Interface para linha de comando
+
+Integrantes: Miguel Barreto Rezende Marques de Freitas (12/0130424), Danilo José Bispo Galvão (12/0114852) e Richard de Almeida Roberto (09/0131100)
+
+Como compilar: 
+	Para realizar os testes: "make testes" (sem aspas)
+	Para executar o programa: "make projetofinal2" (sem aspas)
+
+Como usar: 
+	O programa é autoexplicativo. No menu inicial você pode escolher entre criar um novo comando, abrir a lista de comandos, procurar um comando ou sair do programa. Uma vez que você clica em criar um novo comando, uma janela aparecerá solicitando dados sobre o comando, como o nome do comando, o comando em si e um comentário (opcional), e então pergunta-se se quer salvar o comando e se quer executar o comando. Se o usuário desejar salvar o comando, o mesmo será salvo em um arquivo de texto. Se o usuário quiser, o comando é executado, o programa sai da ncurses (biblioteca gráfica utilizada) e vai para o terminal para executar o comando, e então, apertando enter, volta-se para o programa. Se for escolhida a opção de abrir, a lista de todos os comandos já salvos aparecem em uma nova janela, com os mais utilizados no topo. Uma vez que se escolha o comando desejado, aparece mais uma janela com as várias opções para se fazer com este comando, as quais são: Executar, Salvar, Salvar como (altera o nome), adicionar comentário, adicionar parâmetro (adiciona alguma coisa ao comando), remover comando (tira o comando do arquivo) e sair.
+	O programa conta com crítica de dados. Ele não deixa selecionar a opção "abrir lista de comandos" ou "procurar comandos" se não tiverem comandos salvos, não deixa selecionar opções inválidas nos menus e critica a leitura do teclado o máximo possível.
+	O arquivo constante em que sempre serão escritos e lidos os comandos se chama lista_comandos.txt
+
+Documentação:
+	Os headers estão documentados segundo o estilo Javadoc e os .c estão documentados ao longo das linhas, explicando passo a passo como o programa funciona e o que cada coisa faz. Também foi gerad a documentação do Doxygen, que estão na pasta html.
+
+Roteiro de testes:
+	"test of insere_no_inicio", test_insere_no_inicio
+		Cria uma lista, insere um elemento nela e testa se o elemento inserido é o contido na lista.
+	"test of inicializa_ncurses", test_inicializa_ncurses
+		Testa o retorno da função inicializa_ncurses.
+	"test of encerra_ncurses", test_encerra_ncurses
+		Testa o retorno da função encerra_ncurses.
+	"test of lista_cria", test_lista_cria
+		Testa se a função cria() retorna uma lista NULL.	
+	"test of conta_elementos", test_conta_elementos
+		Cria uma lista, insere três elementos e confere se o retorno da função conta_elementos() é três.
+	"test of encontra_comando", test_encontra_comando
+		Cria uma lista e insere três elementos, cria outra lista e procura-se pelo segundo elemento e testa se o conteúdo é igual.
+	"test of cria__ou_atualiza_arquivo", test_cria_ou_atualiza_arquivo
+ 		Testa o retorno da função cria_ou_atualiza_arquivo.
+	"test of reescreve_arquivo", test_reescreve_arquivo
+		Cria-se uma lista e insere um elemento, e testa o retorno da função reescreve_arquivo.
+	"test of print_menu",test_print_menu
+		Cria-se uma janela, um vetor de char e testa o retorno da função print_menu.
+	"test of selecionar",test_selecionar
+		Testa o retorno da função selecionar.
+	"test of imprime_lista",test_imprime_lista
+		Cria uma lista e uma janela, e testa o retorno da função imprime_lista.
+
+	"test of executa_comando", teste_executa_comando
+		Executa um comando no terminal utilizando a função executa_comando, e testa se ele foi executado ou não, não importando a corretude do comando em questão.
+	"test of recebe_input_simples", test_recebe_input_simples
+		Cria-se uma janela e testa o valor de retorno da função recebe_input_simples.
+	"test of ordena", test_ordena
+		Cria-se uma lista e insere dois elemento. Ordena utilizando a função ordena e testa o valor de retorno.
+	"test of procura_string", test_procura_string
+		Cria-se uma lista e adiciona um elemento. Cria-se outra lista e procura-se pelo elemento adicionado, e se avalia o dado da segunda lista.
+	"test of remover_comando", test_remover_comando
+		Cria-se uma lista, adiciona um elemento nele, e em seguida o remove da lista e testa o valor de retorno.
+Instrumentação usando o gcov:
+-Após compilação de todos os módulos, o módulo teste.c apresentou 91.73% de utilização em 133 linhas e portanto passou nos pré-requisitos de projeto (>80%)
+Doxygen: 
+-Os arquivos foram devidamente documentados no estilo javadoc e os arquivos do doxygen estão na pasta html, anexada ao projeto.
